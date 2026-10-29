@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glue Monday</title>
+<style>
+:root{--bg:#949599;--fg:#000000;--mut:#4a4b4f;--pan:#ffffff;--ln:#000000;--cell:#ffffff;--cellb:#949599;--wv:#fffcbf;--tp:80%;--k:#ed008c;--s:#fff301;--h:#00adef;--o:#32bcad;--blue:#00adef;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000000;--fg:#ffffff;--mut:#949599;--pan:#141415;--ln:#949599;--cell:#232426;--cellb:#3d3e42;--wv:#232426;--tp:0%;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#000000;--fg:#ffffff;--mut:#949599;--pan:#141415;--ln:#949599;--cell:#232426;--cellb:#3d3e42;--wv:#232426;--tp:0%}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 "Futura","Futura PT","Century Gothic","Avenir Next","Trebuchet MS",Helvetica,Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:8px 10px 16px}
+header{text-align:center}
+h1{font-size:clamp(32px,6vw,56px);line-height:.9;letter-spacing:-.02em;margin:8px 0 2px;font-weight:700}
+.sub{color:var(--mut);margin:2px 0 8px;font-size:11px;letter-spacing:.04em}
+.mid{justify-content:center;text-align:center}
+#stage{max-width:640px;margin:0 auto}
+#wheel{width:100%;height:auto;display:block}
+.sg{fill:color-mix(in srgb,var(--tint) var(--tp),var(--cell));stroke:var(--cellb);stroke-width:.6;cursor:pointer}
+.sg.d{stroke:var(--ln);stroke-width:1}
+.sg.on{fill:var(--col)}
+.sg:hover{stroke:var(--fg);stroke-width:2.2}
+.ct{fill:var(--fg);text-anchor:middle;pointer-events:none}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:11px;margin:4px 0}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:11px;height:11px;border-radius:50%;display:block;border:1px solid var(--ln)}
+section{background:var(--pan);border:1px solid var(--ln);border-radius:20px;padding:10px}
+h2{font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px;display:flex;align-items:center;justify-content:center;gap:8px}
+h2::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--blue);display:block}
+section:nth-of-type(2) h2::before{background:var(--s)}
+button,input,select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--ln);padding:8px 14px;border-radius:999px}
+button{cursor:pointer;font-weight:700;letter-spacing:.04em}button:hover:not(:disabled){background:var(--fg);color:var(--bg)}
+button:disabled{background:var(--cell);color:var(--mut);border-style:dashed;cursor:default}
+button.go{background:var(--blue);border-color:var(--ln);color:#000;font-size:14px;font-weight:800;padding:8px 16px}button.go:disabled{background:var(--cell);color:var(--mut);border-style:dashed}
+input[type=number]{width:84px;text-align:center}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:6px 0}
+label{color:var(--mut);display:flex;gap:6px;align-items:center;font-size:13px}
+#st{min-height:22px;margin:10px 0;font-size:13px;text-align:center}
+.stats{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px}
+.stats div{width:92px;height:92px;border-radius:50%;border:1px solid var(--ln);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.stats b{font-size:21px;font-weight:700;line-height:1.1}.stats span{color:var(--mut);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+
+.gl{font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;font-weight:700;font-size:15px;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none;text-transform:uppercase}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+section h2::before{background:var(--s)}
+.sym{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.sym3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sym3 button{padding:6px 4px}
+.f{display:flex;flex-direction:column;gap:5px;align-items:stretch;text-align:center;color:var(--mut);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.f input,.f select,.f button{width:100%;text-align:center;text-align-last:center;letter-spacing:0;text-transform:none;font-size:15px;color:var(--fg)}
+.f button{color:var(--fg)}.f button:hover:not(:disabled){color:var(--bg)}
+.f input[type=checkbox]{width:auto}
+.ck{display:flex;justify-content:center;align-items:center;gap:8px;height:39px;border:1px solid var(--ln);border-radius:999px;background:var(--bg);color:var(--fg);letter-spacing:0;text-transform:none;font-size:15px}
+
+.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;margin-top:8px;align-items:start}
+.stage-left{width:100%}
+.stage-right{display:flex;flex-direction:column;gap:8px}
+@media (max-width:699px){.cols{grid-template-columns:1fr}}
+:root{--jk:#0b0b0c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--jk:#2a2b2e}}
+:root[data-theme="dark"]{--jk:#2a2b2e}
+.floppy{display:flex;justify-content:center}
+.disk{position:relative;width:100%;max-width:440px;aspect-ratio:1;container-type:inline-size;overflow:hidden}
+.disk svg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+#layer3{fill:var(--jk) !important}
+.ddrop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:36%;height:36%;border-radius:50%;background:transparent;color:var(--fg);cursor:pointer;font-weight:700;font-size:max(10px,2.8cqw);letter-spacing:.04em;text-transform:uppercase;padding:4px;border:1px solid var(--fg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+.ddrop small{display:block;font-weight:400;font-size:.8em;text-transform:none}
+.ddrop.on{background:var(--s);color:#000;border-color:#000}
+.dlabel{position:absolute;left:7.5%;top:7.2%;width:78%;height:19%}
+.dbtns{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2.2cqw;height:100%}
+.dbtn{padding:0;border-radius:8px;border:1px solid #000;background:#fff;color:#000;cursor:pointer;font-size:max(11px,3.1cqw);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.dbtn:hover:not(:disabled){background:#000;color:#fff}
+.dbtn:disabled{background:#e9e9ea;color:#4a4b4f;border-style:dashed;cursor:default}
+.dbpm{position:absolute;left:71.1%;top:53.3%;width:14.4%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--fg)}
+.dbpm input{width:92%;border:0;background:transparent;color:var(--fg);font-size:max(13px,3.9cqw);font-weight:700;padding:0;border-radius:0;text-align:center;-moz-appearance:textfield}
+.dbpm input::-webkit-outer-spin-button,.dbpm input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.dbpm label{color:var(--fg);font-size:max(7px,1.6cqw);letter-spacing:.18em;text-transform:uppercase;display:block;margin-top:-1px}
+.pn{color:var(--mut);font-size:12px;letter-spacing:.06em;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dst{position:absolute;left:6%;top:74%;width:36%;color:#fff;font-size:max(9px,2.2cqw);line-height:1.25;word-break:break-word;margin:0;min-height:0;text-align:left}
+
+/* one-screen layout: wheel left; floppy + rebuild stacked on the right; sized to the window, no scrolling */
+@media (min-width:700px){
+ html,body{height:100%;overflow:hidden}
+ main{max-width:none;height:100dvh;padding:8px 14px;display:flex;align-items:center;justify-content:center}
+ .cols{margin:0;gap:16px;align-items:center;justify-content:center;grid-template-columns:min(calc(100dvh - 112px),56vw) minmax(250px,500px)}
+ #stage{width:100%;max-width:none;margin:0}
+ .stage-left{width:100%}
+ .stage-right{gap:8px}
+ .disk{width:min(100%,460px,calc(100dvh - 330px));margin:0 auto}
+ section{padding:8px 12px 10px;border-radius:22px}
+ h2{margin:0 0 6px}
+ .sym{gap:5px 10px}.f{gap:2px;font-size:10px}
+ .f input,.f select,.f button{padding:5px 10px;font-size:14px}
+ .row{margin:4px 0;gap:6px}
+ .legend{margin:2px 0;gap:4px 12px}
+ button.go{padding:6px 16px}.sym3 button{padding:5px 4px}
+}
+@media (min-width:700px) and (max-height:520px){html,body{overflow:auto}main{height:auto;min-height:100dvh}}
+</style></head><body><main>
+<h1 class="sr">Glue Monday</h1>
+<div class="cols">
+<div class="stage-left">
+<div id="stage"><svg id="wheel" viewBox="-27 -27 754 754" role="img" aria-label="Circular sequencer. One revolution is one bar of 16 steps; beats 1, 5, 9 and 13 sit at 12, 3, 6 and 9 o’clock."></svg></div>
+<div class="legend" id="legend"></div>
+<div class="row"><button id="pv" aria-label="Previous bar">‹</button><label>Bar <input id="vb" type="number" min="1" value="1"></label><button id="nx" aria-label="Next bar">›</button><button id="imp">Import MIDI</button><button id="rst">Reset to Blue Monday</button><input id="midi" type="file" accept=".mid,.midi,audio/midi,audio/x-midi" hidden><span id="pname" class="pn">Blue Monday</span></div>
+</div>
+<div class="stage-right">
+<div class="floppy"><div class="disk" id="disk" role="group" aria-label="Source: a 5.25 inch floppy disk">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="512px" height="512px" viewBox="0 0 8000 8000" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="gradient" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="rgb(100,100,100)"/><stop offset="100%" stop-color="black"/></linearGradient></defs><g id="layer1" fill="none"><path d="M3754 7549 c-11 -6 -28 -23 -37 -39 -16 -26 -17 -99 -17 -840 l0 -812 34 -34 34 -34 232 0 232 0 34 34 34 34 0 820 0 820 -31 31 -31 31 -231 -1 c-134 0 -241 -5 -253 -10z"/><path d="M3780 5465 c-429 -74 -784 -301 -1015 -650 -323 -491 -324 -1130 -1 -1614 226 -339 555 -560 955 -641 569 -115 1185 139 1507 622 296 443 335 994 104 1463 -72 147 -118 218 -213 326 -287 329 -692 511 -1127 508 -74 -1 -169 -7 -210 -14z m415 -301 c586 -101 1006 -617 982 -1204 -13 -300 -120 -555 -322 -769 -155 -164 -383 -294 -599 -341 -171 -37 -391 -31 -566 15 -548 148 -921 688 -861 1251 31 298 147 533 362 739 170 162 386 271 613 309 111 19 283 19 391 0z"/><path d="M6145 5430 c-318 -64 -528 -383 -461 -700 73 -345 436 -551 768 -436 411 143 531 665 224 972 -78 78 -194 143 -294 163 -60 12 -177 13 -237 1z m248 -320 c218 -109 219 -419 1 -526 -68 -33 -174 -38 -238 -10 -112 47 -180 149 -180 270 -1 138 77 242 214 287 45 15 154 4 203 -21z"/></g><g id="layer2" fill="#ffffff"><path d="M656 2180 c-60 -23 -119 -79 -149 -140 l-22 -45 0 -655 c0 -647 0 -656 21 -701 27 -58 85 -116 143 -143 l46 -21 3015 0 3015 0 52 27 c28 15 67 47 87 71 68 83 66 61 66 763 0 611 -1 635 -20 687 -23 62 -72 117 -133 150 l-42 22 -3015 2 c-2957 2 -3016 2 -3064 -17z"/></g><g id="layer3" fill="url(#gradient)"><path d="M0 4000 l0 -4000 4000 0 4000 0 0 970 0 970 -295 0 -295 0 0 590 0 590 295 0 295 0 0 2440 0 2440 -1285 0 -1285 0 0 -23 c0 -92 -92 -209 -193 -246 -32 -11 -78 -21 -102 -21 -61 0 -150 35 -198 79 -44 39 -97 140 -97 184 l0 27 -825 0 -825 0 0 -23 c0 -92 -92 -209 -193 -246 -32 -11 -78 -21 -102 -21 -61 0 -150 35 -198 79 -44 39 -97 140 -97 184 l0 27 -1300 0 -1300 0 0 -4000z m4269 3529 l31 -31 0 -820 0 -820 -34 -34 -34 -34 -232 0 -232 0 -34 34 -34 34 0 812 c0 741 1 814 17 840 9 16 26 33 37 39 12 5 119 10 253 10 l231 1 31 -31z m-59 -2063 c370 -61 671 -225 907 -495 95 -108 141 -179 213 -326 171 -348 195 -744 68 -1120 -127 -377 -431 -705 -802 -866 -406 -176 -853 -167 -1245 24 -800 392 -1074 1392 -586 2132 231 349 586 576 1015 650 102 17 327 18 430 1z m2172 -37 c29 -6 91 -29 138 -51 160 -76 289 -243 319 -412 64 -354 -187 -679 -542 -703 -288 -19 -552 182 -613 467 -67 317 143 636 461 700 60 12 177 11 237 -1z m383 -3253 c59 -27 107 -72 138 -130 22 -41 22 -42 25 -692 3 -640 2 -653 -18 -707 -15 -40 -35 -69 -71 -101 -93 -84 220 -76 -3149 -74 l-3005 3 -45 22 c-53 26 -109 83 -136 138 -18 38 -19 74 -22 684 -3 726 -5 706 71 788 41 44 78 69 127 84 14 4 1377 8 3030 8 l3005 1 50 -24z"/></g></svg>
+<div class="ddrop" id="drop" role="button" tabindex="0"><span>Drop audio</span><small>or click</small><input id="file" type="file" accept="audio/*" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;display:block;cursor:pointer;z-index:2;border-radius:50%"></div>
+<div class="dlabel"><div class="dbtns"><button id="half" class="dbtn">÷2</button><button id="dbl" class="dbtn">×2</button><button id="refit" class="dbtn" disabled>Re-slice</button><button id="playSrc" class="dbtn" disabled>▶ Play</button></div></div>
+<div class="dbpm"><input id="bpm" type="number" step="0.1" min="40" max="240" placeholder="–" aria-label="BPM"><label for="bpm">BPM</label></div>
+<div id="st" class="dst"></div>
+</div></div>
+<section><h2>Rebuild</h2>
+<div class="sym">
+<label class="f">Target BPM<input id="tbpm" type="number" step="0.1" value="133"></label>
+<label class="f">Start bar<input id="start" type="number" min="1" value="1"></label>
+<label class="f">Bars<input id="bars" type="number" min="1" value="32"></label>
+<div class="f"><span>Range</span><button id="whole">Whole song</button></div>
+<label class="f" style="grid-column:1/-1">Slice choice<select id="pick"><option value="cycle">Cycle best</option><option value="best">Always best</option><option value="random">Random</option></select></label>
+</div>
+<div class="row"><button class="go" id="gen" disabled>Make it Blue Monday</button></div>
+<div class="sym3"><button id="playOut" disabled>▶ Glue Monday</button><button id="stop">■ Stop</button><button id="dl" disabled>Download WAV</button></div>
+</section>
+</div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const LANES=[
+{n:'Kick',c:'#ed008c',t:'#f899d1',len:2,g:1,pool:0,f:['lp',300]},
+{n:'Snare',c:'#fff301',t:'#fffcbf',len:2,g:.9,pool:1,f:['hp',250]},
+{n:'Clap',c:'#f68121',t:'#f9ba84',len:2,g:.8,pool:1,f:['hp',700]},
+{n:'Hi-hat',c:'#00adef',t:'#8ed9f9',len:1,g:.5,pool:2,f:['hp',6000]},
+{n:'Cymbal',c:'#32bcad',t:'#8ddad2',len:4,g:.6,pool:2,f:['hp',4000]},
+{n:'Tom hi',c:'#8781bd',t:'#beb8da',len:2,g:.8,pool:0,pf:1.6,f:['lp',900]},
+{n:'Tom mid',c:'#583f9a',t:'#bdb6d8',len:2,g:.8,pool:0,pf:1.25,f:['lp',900]},
+{n:'Tom low',c:'#f7adce',t:'#fbd2e4',len:2,g:.8,pool:0,pf:1,f:['lp',900]},
+{n:'Tambourine',c:'#8ed9f9',t:'#c1eafc',len:1,g:.5,pool:2,f:['hp',5000]}];
+const ARR={"n":252,"l":[[["................","x...x...xxxxxxxx","x...x...x...x...","x..x..x..x......","x...x..xx...x..."],"121212121212121212121212121212123322222222222222222222222222222222222222222222222222222222222222222222222222222222132424242424242424242424242424242424242424242424242424242424242424122212122212222222222222222222222222222222222222222222222222222222222220"],[["................","....x.......x...","xxxxx.x.xxxxx.xx","xxx.xxxxx.......","x.....x.....x...","x.x.x.x........."],"000000000000000011111111111111110011111111111111112311111111111111111111111111111111111111111111111111111111111104501111111111111111111111111111111111111111111111111111111111111111112311112311111111111111111111111111111111111111111111111111111111111110"],[["................","....xxxxxxxxxxxx","..........x.....","....xx.xx.x.xxxx","xxxx............","..............x.","xxxxx.x.xxxxx.xx","xxx.xxxxx.x.x...","..xxx.xx..xxx.x.","....x.xx.xxxx.xx","xxxxxxxxxxxx...."],"000000000000000000000000000000000000000000000010000200000000000000000000000003400003400000000000000000000000000000000000000340000000000000000000000000000000000000050003434003434343406700006700000000000000100340340003400080000003400340009a009a0000000000"],[["................","x.xxx.xx..xxx.xx","x.xxx.xxx.xxx.xx","..x...x...x...x.","..x...x...x.x.x.","..xxx.xx..xxx.xx"],"000000000000000012121212121212120033333333333333333433333333333333333333333333333333333333333333333333333333333355001212121212121212121212121212121212121212121212121212121212121212123412123412333333333333333333333333333333333333333333333333333333333330"],[["................","x..x..x..x......","............x...","x...............","........x.......","....x.......x..."],"000000000000000000000000000000001100000000000000000200000000000000000030000000000000043000000000000000300030000055013000000030000000300000003000000000000000000030000000000200000000000200000200000000000000000000000000000000000000000000000000000000000000"],[["................","....xxxxxxxxxxxx","xxxxxxxx........","....xxxxx.......","...xx.x.xxx.xxx.","..xxx.x.xxx.x.x.","..x.xxx.x.x.xxx.","....xxxxx.x.xxxx","....xxxxx.....xx","..........xxx...","..xx..x.xxxxxxx.","........xxxxxxxx","..xxx.x.xxxxxxx.","..xxxxx.x.x.xxx.","..........xxx.x.","..xxx.x.xxx.xxxx","..........xx..x.","..........xx.x.x","x...............","..........x.xxxx","..xxx.x.xxx.x.xx"],"000000000000000000000000000000000000001200300000000000000000000000000000000000000000000000000000000004050600000000001212000100070809000a000b000c00000d0e0f0g0hij00000000000k00000009000000000000000012001212001200001200121200120000120012120012000012001212"],[["................",".........xxxxxxx","xxxxxxxx........","....xxxxxxxxxxxx","....xxx.x.......","..xxx.x.xxx.xxx.","..xx..x.xxx.xxx.","......xxx.x.xxx.","..xxx.x.xxx.x.xx","..xxxxxxx.x.xxx.","..xxx.x.x.x.xxx.",".......xx.x.xxx.","..........xxx...","xxxxx.xx........","x.xxxxx.x.......","..xxx.x.xxx.xxxx","..xxx.x.xxx.x...","..x...x.x.x.xxx.","x...............","..xxxxxxx.x.....","..x............."],"00000000000000000000000000000000000000000012320032000000040005000607083232090a0b0c00de000f0g03000hij0k000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"],[["................","........x.x.xxxx","..............xx"],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"],[["................","..............x."],"000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000100000000000000000000000000000000000000000000000000000000000000"]]};
+let NB=ARR.n;let BARS=[],vb=0,ctx,mono,sr,A=null,out=null,node=null;
+function resetBars(){BARS=[];for(let b=0;b<NB;b++)BARS.push(ARR.l.map(([d,s])=>[...d[parseInt(s[b],36)]].map(c=>c==='x')))}
+const st=m=>$('st').textContent=m;
+let lastMeta=null,raf=0,segs=[];
+const CX=350,hex=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16));
+// Saville colour code (per savillecode.com): ten hues = digits 0-9, A=1 ... Z=26.
+// 1-9 are one block. 10+ are two blocks: units digit outside, tens digit inside (M=13 -> 3 over 1).
+// Hue order is taken from the supplied palette; digit 0 = black is an assumption. Edit DIG to correct.
+const DIG=['#000000','#32bcad','#fff301','#8781bd','#f68121','#8ed9f9','#f7adce','#583f9a','#ed008c','#00adef'];
+const glyph=n=>n<10?[DIG[n]]:[DIG[n%10],DIG[Math.floor(n/10)]];
+const pt=(r,a)=>{a=a*Math.PI/180;return[(CX+r*Math.sin(a)).toFixed(1),(CX-r*Math.cos(a)).toFixed(1)]};
+function arc(ro,ri,a0,a1){const[x1,y1]=pt(ro,a0),[x2,y2]=pt(ro,a1),[x3,y3]=pt(ri,a1),[x4,y4]=pt(ri,a0);return`M${x1} ${y1}A${ro} ${ro} 0 0 1 ${x2} ${y2}L${x3} ${y3}A${ri} ${ri} 0 0 0 ${x4} ${y4}Z`}
+function buildWheel(){
+ let s='<circle cx="350" cy="350" r="266" fill="none" stroke="var(--wv)" stroke-width="46"/><path id="wf" fill="var(--fg)" opacity=".85"/>';
+ s+='<circle cx="350" cy="350" r="356" fill="none" stroke="#000" stroke-width="34" pointer-events="none"/>';
+ {const ph='GLUE MONDAY';for(let k=0;k<11;k++){const c=ph[k];if(c===' ')continue;const a=(k-5)*16;s+=`<text class="gl" aria-hidden="true" x="350" y="-6" transform="rotate(${a.toFixed(2)} 350 350)">${c}</text>`}}
+  for(let i=0;i<26;i++){const n=i+1,g=glyph(n),a0=i*360/26,a1=(i+1)*360/26,m=(a0+a1)/2,ch=String.fromCharCode(65+i);
+  const st='stroke="var(--bg)" stroke-width="1.5"';
+  if(g.length==1)s+=`<path d="${arc(338,292,a0,a1)}" fill="${g[0]}" ${st}></path>`;
+  else s+=`<path d="${arc(338,316,a0,a1)}" fill="${g[0]}" ${st}></path><path d="${arc(316,292,a0,a1)}" fill="${g[1]}" ${st}></path>`;
+  ;}
+ LANES.forEach((L,l)=>{const ro=236-l*15,ri=ro-13;for(let k=0;k<16;k++)
+  s+=`<path class="sg${k%4==0?' d':''}" data-l="${l}" data-s="${k}" d="${arc(ro,ri,k*22.5+.5,(k+1)*22.5-.5)}" style="--col:${L.c};--tint:${L.t}"><title>${L.n} · step ${k+1}</title></path>`});
+ [0,90,180,270].forEach(a=>{const[x1,y1]=pt(100,a),[x2,y2]=pt(244,a);s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ln)" stroke-width="1" opacity=".35" pointer-events="none"/>`});
+ s+='<g id="hand" style="display:none" pointer-events="none"><line x1="350" y1="252" x2="350" y2="102" stroke="var(--fg)" stroke-width="3"/><circle cx="350" cy="246" r="6" fill="var(--fg)"/></g>';
+ s+='<circle cx="350" cy="350" r="94" fill="var(--pan)" stroke="var(--ln)" stroke-width="1.5" pointer-events="none"/>';
+ s+='<text class="ct" x="350" y="300" font-size="11" letter-spacing="3">BAR</text><text class="ct" id="cBar" x="350" y="352" font-size="48" font-weight="700">1</text><text class="ct" id="cOf" x="350" y="378" font-size="10" letter-spacing="2">OF '+NB+'</text><text class="ct" id="cBpm" x="350" y="402" font-size="12" font-weight="700">133 BPM</text>';
+ $('wheel').innerHTML=s;
+ segs=LANES.map(()=>[]);$('wheel').querySelectorAll('.sg').forEach(e=>segs[+e.dataset.l][+e.dataset.s]=e);
+ $('legend').innerHTML=LANES.map(L=>`<span><i style="background:${L.c}"></i>${L.n}</span>`).join('');
+}
+function paint(){const B=BARS[vb];segs.forEach((r,l)=>r.forEach((e,k)=>e.classList.toggle('on',B[l][k])));$('cBar').textContent=vb+1;$('vb').value=vb+1;$('vb').max=NB;$('cOf').textContent='OF '+NB}
+$('wheel').addEventListener('click',e=>{const t=e.target;if(!t.classList||!t.classList.contains('sg'))return;const l=+t.dataset.l,k=+t.dataset.s;BARS[vb][l][k]=!BARS[vb][l][k];t.classList.toggle('on')});
+const goBar=n=>{vb=Math.max(0,Math.min(NB-1,n));paint()};
+$('pv').onclick=()=>goBar(vb-1);$('nx').onclick=()=>goBar(vb+1);$('vb').onchange=e=>goBar(+e.target.value-1);
+$('imp').onclick=()=>$('midi').click();
+$('rst').onclick=()=>{NB=ARR.n;resetBars();vb=0;$('start').value=1;$('bars').value=32;$('tbpm').value=133;$('cBpm').textContent='133 BPM';$('pname').textContent='Blue Monday';paint();st('Reset to Blue Monday')};
+// GM drum note -> lane: 0 kick,1 snare,2 clap,3 hat,4 cymbal,5 tom hi,6 tom mid,7 tom low,8 tambourine
+const GM={35:0,36:0,37:1,38:1,40:1,39:2,42:3,44:3,46:4,49:4,51:4,52:4,53:4,55:4,57:4,59:4,54:8,56:8,69:8,70:8,48:5,50:5,60:5,61:5,45:6,47:6,62:6,63:6,41:7,43:7,64:7};
+function parseMidi(buf){
+ const d=new DataView(buf),u=new Uint8Array(buf);let p=0;
+ const str=n=>{let s='';for(let i=0;i<n;i++)s+=String.fromCharCode(u[p++]);return s};
+ const vl=()=>{let v=0,b;do{b=u[p++];v=(v<<7)|(b&127)}while(b&128);return v};
+ if(str(4)!=='MThd')throw new Error('not a MIDI file');
+ const hl=d.getUint32(p);p+=4;const nt=d.getUint16(p+2),div=d.getUint16(p+4);p+=hl;
+ if(div&0x8000)throw new Error('SMPTE timing is not supported');
+ const hits=[];let ts=null,tempo=null;
+ for(let t=0;t<nt;t++){
+  if(str(4)!=='MTrk')throw new Error('damaged track');const ln=d.getUint32(p);p+=4;const end=p+ln;let tm=0,rs=0;
+  while(p<end){tm+=vl();const s=u[p];
+   if(s===0xFF){const ty=u[p+1];p+=2;const l=vl();
+    if(ty===0x58&&l>=2&&!ts)ts=[u[p],1<<u[p+1]];
+    if(ty===0x51&&l===3&&!tempo)tempo=60000000/((u[p]<<16)|(u[p+1]<<8)|u[p+2]);
+    p+=l;continue}
+   if(s===0xF0||s===0xF7){p++;p+=vl();continue}
+   if(s&128){rs=s;p++}
+   const c=rs>>4,ch=rs&15;
+   if(c===12||c===13){p++}
+   else{const a=u[p],b=u[p+1];p+=2;if(c===9&&b>0&&ch===9)hits.push([tm,a])}}
+  p=end}
+ return{hits,div,ts,tempo}}
+function midiToBars(m){
+ const sp=m.div/4,g=m.hits.map(x=>[Math.round(x[0]/sp),GM[x[1]]]).filter(x=>x[1]!==undefined);
+ if(!g.length)throw new Error('no drum notes found on MIDI channel 10');
+ let lo=1e9,hi=0;for(const x of g){lo=Math.min(lo,x[0]);hi=Math.max(hi,x[0])}
+ const first=Math.floor(lo/16),nb=Math.floor(hi/16)-first+1,bars=[];
+ for(let b=0;b<nb;b++)bars.push(LANES.map(()=>Array(16).fill(false)));
+ for(const x of g)bars[Math.floor(x[0]/16)-first][x[1]][x[0]%16]=true;
+ return bars}
+$('midi').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ try{const m=parseMidi(await f.arrayBuffer());BARS=midiToBars(m);NB=BARS.length;vb=0;
+  $('start').value=1;$('bars').value=Math.min(32,NB);$('pname').textContent=f.name;
+  if(m.tempo){$('tbpm').value=m.tempo.toFixed(1);$('cBpm').textContent=m.tempo.toFixed(1)+' BPM'}
+  paint();st('Imported '+NB+' bars'+(m.ts&&(m.ts[0]!==4||m.ts[1]!==4)?' (note: '+m.ts[0]+'/'+m.ts[1]+', grid assumes 4/4)':''))}
+ catch(err){st('MIDI import failed: '+err.message)}};
+$('whole').onclick=()=>{$('start').value=1;$('bars').value=NB};
+$('tbpm').oninput=e=>{$('cBpm').textContent=(+e.target.value||0)+' BPM'};
+resetBars();buildWheel();paint();
+
+// ---------- DSP ----------
+function lp(x,fc){const a=1-Math.exp(-2*Math.PI*fc/sr),o=new Float32Array(x.length);let y=0;for(let i=0;i<x.length;i++){y+=a*(x[i]-y);o[i]=y}return o}
+const lp2=(x,fc)=>lp(lp(x,fc),fc);
+let Lw,L5,flux,fluxL,hopS,nF;
+function prep(){
+ Lw=lp2(mono,200);L5=lp2(mono,5000);
+ const hop=Math.round(sr*.01);hopS=hop/sr;nF=Math.floor(mono.length/hop);
+ const e=new Float32Array(nF),el=new Float32Array(nF);
+ for(let i=0;i<nF;i++){let s=0,l=0;for(let j=0;j<hop;j++){const k=i*hop+j;s+=mono[k]*mono[k];l+=Lw[k]*Lw[k]}e[i]=Math.sqrt(s/hop);el[i]=Math.sqrt(l/hop)}
+ flux=new Float32Array(nF);fluxL=new Float32Array(nF);
+ for(let i=1;i<nF;i++){flux[i]=Math.max(0,e[i]-e[i-1]);fluxL[i]=Math.max(0,el[i]-el[i-1])}
+}
+function comb(f,p,o,n){let s=0,c=0;for(let t=o;t<n;t+=p){const i=Math.round(t);if(i>=n-1)break;s+=Math.max(f[i-1]||0,f[i],f[i+1]);c++}return c?s:0}
+function findBpm(){
+ const n=Math.min(nF,12000);let best=0,bb=120;
+ for(let b=80;b<=180;b+=.1){const p=60/b/hopS;let m=0;
+  for(let o=1;o<p;o+=1){const s=comb(flux,p,o,n)+.5*comb(flux,p,o+p/2,n);if(s>m)m=s}
+  if(m>best){best=m;bb=b}}
+ return Math.round(bb*10)/10;
+}
+function findPhase(bpm){
+ const p=60/bpm/hopS;let bo=1,m=-1;
+ for(let o=1;o<p;o+=.5){const s=comb(flux,p,o,nF);if(s>m){m=s;bo=o}}
+ const q=[0,0,0,0];let k=0;
+ for(let t=bo;t<nF-2;t+=p,k++)q[k%4]+=Math.max(fluxL[Math.round(t)-1]||0,fluxL[Math.round(t)],fluxL[Math.round(t)+1]||0);
+ const d=q.indexOf(Math.max(...q));
+ return Math.max(0,(bo+d*p-1)*hopS);
+}
+function slice(bpm){
+ const off=findPhase(bpm),stepDur=60/bpm/4,spS=stepDur*sr;
+ const n=Math.max(0,Math.floor((mono.length/sr-off)/stepDur)-2);
+ const F=[];
+ for(let s=0;s<n;s++){const a=Math.round(off*sr+s*spS),w=Math.floor(spS*.6);let l=0,m=0,h=0;
+  for(let i=a;i<a+w;i++){const x=Lw[i],y=L5[i]-x,z=mono[i]-L5[i];l+=x*x;m+=y*y;h+=z*z}
+  F.push([Math.sqrt(l/w),Math.sqrt(m/w),Math.sqrt(h/w)])}
+ const nrm=[0,1,2].map(c=>{const v=F.map(f=>f[c]).sort((a,b)=>a-b);return (v[Math.floor(v.length*.95)]||1e-9)||1e-9});
+ const sc=F.map(f=>{const l=f[0]/nrm[0],m=f[1]/nrm[1],h=f[2]/nrm[2];
+  return [l*(1-.4*Math.min(h,1)),m+.5*h-.6*l,h-.5*l-.3*m,h-.5*l-.3*m]});
+ const top=Math.max(4,Math.min(12,Math.round(n*.1)));
+ const pools=[0,1,2,3].map(c=>[...Array(n).keys()].sort((a,b)=>sc[b][c]-sc[a][c]).slice(0,top));
+ return {bpm,off,stepDur,spS,n,pools};
+}
+
+// ---------- UI ----------
+async function load(file){
+ try{
+  st('Decoding…');ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+  const ab=await ctx.decodeAudioData(await file.arrayBuffer());
+  sr=ab.sampleRate;mono=new Float32Array(ab.length);
+  for(let c=0;c<ab.numberOfChannels;c++){const d=ab.getChannelData(c);for(let i=0;i<ab.length;i++)mono[i]+=d[i]/ab.numberOfChannels}
+  st('Finding tempo…');await new Promise(r=>setTimeout(r,30));
+  prep();const b=findBpm();$('bpm').value=b;reslice();
+  ['gen','refit','playSrc'].forEach(i=>$(i).disabled=false);
+  st('Ready: '+file.name);
+ }catch(e){st('Could not read that file: '+e.message)}
+}
+function reslice(){
+ if(!mono)return;const b=+$('bpm').value;st('Slicing…');
+ A=slice(b);
+ drawWave();st('');
+}
+function drawWave(){
+ const N=720,per=mono.length/N,o=[],n=[];
+ for(let i=0;i<N;i++){const a=Math.floor(i*per),z=Math.floor(a+per);let m=0;for(let k=a;k<z;k+=Math.max(1,Math.floor(per/24)))m=Math.max(m,Math.abs(mono[k]));m=Math.min(1,m*1.1);
+  const ang=(i+.5)/N*360;o.push(pt(266+m*21,ang).join(' '));n.push(pt(266-m*21,ang).join(' '))}
+ $('wf').setAttribute('d','M'+o.join('L')+'L'+n.reverse().join('L')+'Z');
+}
+$('drop').onclick=()=>$('file').click();
+$('file').onchange=e=>e.target.files[0]&&load(e.target.files[0]);
+$('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('on')};
+$('drop').ondragleave=()=>$('drop').classList.remove('on');
+$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('on');e.dataTransfer.files[0]&&load(e.dataTransfer.files[0])};
+$('half').onclick=()=>{$('bpm').value=(+$('bpm').value/2).toFixed(1)};
+$('dbl').onclick=()=>{$('bpm').value=(+$('bpm').value*2).toFixed(1)};
+$('refit').onclick=()=>setTimeout(reslice,10);
+
+// ---------- Rebuild ----------
+function extract(idx,L,outLen){
+ const srcLen=Math.round(L.len*A.spS),a=Math.round(A.off*sr+idx*A.spS);
+ let t=new Float32Array(srcLen);for(let i=0;i<srcLen;i++)t[i]=mono[a+i]||0;
+ {const l=lp2(t,L.f[1]);if(L.f[0]=='lp')t=l;else for(let i=0;i<t.length;i++)t[i]-=l[i]}
+ const o=new Float32Array(outLen),r=srcLen/outLen*(L.pf||1),at=Math.round(sr*.002),rel=outLen*.25;
+ for(let i=0;i<outLen;i++){const p=i*r,j=Math.floor(p),f=p-j;const v=(t[j]||0)*(1-f)+(t[j+1]||0)*f;
+  let g=Math.min(1,i/at);if(i>outLen-rel)g*=.5*(1+Math.cos(Math.PI*(i-(outLen-rel))/rel));o[i]=v*g*L.g}
+ return o;
+}
+function generate(){
+ const tb=+$('tbpm').value,start=Math.max(0,+$('start').value-1),nb=Math.min(+$('bars').value,NB-start),oStep=60/tb/4*sr,mode=$('pick').value;
+ const buf=new Float32Array(Math.round(nb*16*oStep+oStep*5)),cnt=LANES.map((_,i)=>i==2?1:0);
+ for(let b=0;b<nb;b++)for(let s=0;s<16;s++)for(let l=0;l<LANES.length;l++){
+  if(!BARS[start+b][l][s])continue;const L=LANES[l],pool=A.pools[L.pool];if(!pool.length)continue;
+  const idx=mode=='best'?pool[0]:mode=='random'?pool[Math.floor(Math.random()*pool.length)]:pool[cnt[l]++%pool.length];
+  const len=Math.round(L.len*oStep),x=extract(idx,L,len),pos=Math.round((b*16+s)*oStep);
+  for(let i=0;i<len&&pos+i<buf.length;i++)buf[pos+i]+=x[i]}
+ let pk=0;for(const v of buf)pk=Math.max(pk,Math.abs(v));if(pk>0)for(let i=0;i<buf.length;i++)buf[i]*=.9/pk;
+ return buf;
+}
+$('gen').onclick=()=>{st('Rebuilding…');$('gen').disabled=true;setTimeout(()=>{
+ try{out=generate();{const s0=Math.max(0,+$('start').value-1);lastMeta={stepSec:60/(+$('tbpm').value)/4,startBar:s0,nb:Math.min(+$('bars').value,NB-s0)}}$('playOut').disabled=false;$('dl').disabled=false;st('Done. '+(out.length/sr).toFixed(1)+'s of Blue Monday.')}catch(e){st('Error: '+e.message)}
+ $('gen').disabled=false},30)};
+function stop(){cancelAnimationFrame(raf);const hd=$('hand');if(hd)hd.style.display='none';if(node){try{node.stop()}catch(e){}node=null}}
+function play(arr,meta){stop();ctx=ctx||new AudioContext();ctx.resume();const b=ctx.createBuffer(1,arr.length,sr);b.copyToChannel(arr,0);node=ctx.createBufferSource();node.buffer=b;node.connect(ctx.destination);node.start();
+ if(meta){const t0=ctx.currentTime,hd=$('hand');hd.style.display='';
+  const tick=()=>{const pos=(ctx.currentTime-t0)/meta.stepSec,bar=meta.startBar+Math.floor(pos/16);
+   if(pos>=meta.nb*16||bar>=NB){stop();return}
+   if(bar!==vb){vb=bar;paint()}
+   hd.setAttribute('transform','rotate('+((pos%16)/16*360).toFixed(2)+' 350 350)');raf=requestAnimationFrame(tick)};tick()}}
+$('playSrc').onclick=()=>play(mono);$('playOut').onclick=()=>play(out,lastMeta);$('stop').onclick=stop;
+$('dl').onclick=()=>{
+ const n=out.length,v=new DataView(new ArrayBuffer(44+n*2)),w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+ w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+ for(let i=0;i<n;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,out[i]))*32767,true);
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v],{type:'audio/wav'}));a.download='glue-monday.wav';a.click();
+};
+</script></body></html>
